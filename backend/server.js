@@ -10,7 +10,9 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: "*"
+  origin: "*",
+  methods: ["GET", "POST"],
+  credentials: true
 }));
 app.use(express.json());
 app.use("/tickets", ticketRoutes);
