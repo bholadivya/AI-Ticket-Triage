@@ -32,7 +32,7 @@ function App() {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/tickets/analyze", {
+      const res = await axios.post("https://ai-ticket-triage-backend.onrender.com/tickets/analyze", {
         message,
       });
 
