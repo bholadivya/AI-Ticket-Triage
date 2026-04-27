@@ -8,13 +8,23 @@ function App() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [initialLoading, setInitialLoading] = useState(true);
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (retry = true) => {
     try {
-      const res = await axios.get("http://localhost:5000/tickets");
+      const res = await axios.get(
+        "https://ai-ticket-triage-backend.onrender.com/tickets",
+      );
       setTickets(res.data);
+      setError("");
     } catch (err) {
-      setError("Failed to load ticket history");
+      if (retry) {
+        setTimeout(() => fetchTickets(false), 3000);
+      } else {
+        setError("Failed to load ticket history");
+      }
+    } finally {
+      setInitialLoading(false);
     }
   };
 
@@ -32,9 +42,12 @@ function App() {
     setError("");
 
     try {
-      const res = await axios.post("https://ai-ticket-triage-backend.onrender.com/tickets/analyze", {
-        message,
-      });
+      const res = await axios.post(
+        "https://ai-ticket-triage-backend.onrender.com/tickets/analyze",
+        {
+          message,
+        },
+      );
 
       setResult(res.data);
       setMessage("");
@@ -66,7 +79,11 @@ function App() {
           {loading ? "Analyzing..." : "Analyze Ticket"}
         </button>
 
-        {error && <p className="error-text">{error}</p>}
+        {initialLoading ? (
+          <p>Loading tickets...</p>
+        ) : error ? (
+          <p className="error-text">{error}</p>
+        ) : null}
 
         {result && (
           <div className="result-card">
